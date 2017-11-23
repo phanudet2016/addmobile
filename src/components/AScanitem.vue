@@ -33,17 +33,16 @@
                 </div>
               </div>
             </div>
-            <br>
             <button @click="getEqm()">ตกลง</button>
           </div>
-          
-          <div v-if="nameEqmTure === false">
+
+          <div v-if="nameEqmTure === false || msgCheck === false">
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md" style="padding-top:10px;">
                   <div class="card">
                     <div class="card-block" style="padding-top:5px;"> 
-                      อุปกรณ์ไม่อยู่ในรายการยืม
+                      อุปกรณ์ไม่อยู่ในรายการนี้
                     </div>
                   </div>
                 </div>
@@ -57,7 +56,7 @@
                 <div class="col-md" style="padding-top:10px;">
                   <div class="card">
                     <div class="card-block" style="padding-top:5px;"> 
-                      อุปกรณ์นี้ถูกยืมไปแล้ว
+                      อุปกรณ์นี้คืนแแล้ว!!!
                     </div>
                   </div>
                 </div>
@@ -65,13 +64,13 @@
             </div>
           </div>
 
-          <div v-if="acceptedSucsess">
+          <div v-if="returnedSucsess">
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md" style="padding-top:10px;">
                   <div class="card">
                     <div class="card-block" style="padding-top:5px;"> 
-                      รับอุปกรณ์ครบแล้ว!!!
+                      รับอุปกรณ์คืนครบแล้ว!!!
                     </div>
                   </div>
                 </div>
@@ -90,7 +89,7 @@ import 'webrtc-adapter'
 import {equipmentRef, auth, userRef, scanRef, historyRef} from './firebase'
 
 export default {
-  name: 'hello',
+  name: 'ascanitem',
 
   data () {
     return {
@@ -113,17 +112,25 @@ export default {
       pauseOnCapture: true,
 
       balanceScan: '',
-      acceptedScan: '',
+      returnedScan: '',
       nameLendScan: '',
       nameEqmTure: '',
       amountScan: '',
-      acceptedSucsess: '',
+      returnedSucsess: '',
       okHidden: '',
       msgStatus: '',
       categoryhit: '',
       departmentHit: '',
       HnnoHit: '',
-      dateHit: ''
+      dateHit: '',
+      checkName: '',
+      checkLast: '',
+      nameLendCheck: '',
+      lastnameLendCheck: '',
+      msgCheck: '',
+      balanceReturn: '',
+      borrowedReturn: '',
+      returnedDate: ''
     }
   },
   firebase: {
@@ -146,43 +153,30 @@ export default {
       }
 
       equipmentRef.child(this.keyEqm + '/equipmentID/' + [this.idexEqm]).update({
-        status: 'ถูกยืม',
-        nameLend: this.firstname,
-        lastnameLend: this.lastname
+        status: 'พร้อมใช้งาน',
+        nameLend: '',
+        lastnameLend: ''
       })
-      this.balanceScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).balance
-      this.acceptedScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).accepted
-      // push history
-      this.amountScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).amountLend
-      this.categoryhit = this.scans.find(scan => scan['.key'] === this.$route.params.id).categoryLend
-      this.nameEqmHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).nameLend
-      this.departmentHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).departmentLend
-      this.HnnoHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).HnNo
-      this.dateHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateLend
-      // end history
+      this.amountScan = this.historys.find(history => history['.key'] === this.$route.params.id).amount
+      this.returnedScan = this.historys.find(history => history['.key'] === this.$route.params.id).returnedEqm
+      this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
+      this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).borrowedEqm
+      this.borrowedReturn = this.borrowedReturn * 1 - 1
+      this.balanceReturn = this.balanceReturn * 1 + 1
       this.amountScan = this.amountScan * 1
-      this.acceptedScan = this.acceptedScan + 1
-      this.balanceScan = this.balanceScan * 1 - 1
-      if (this.acceptedScan >= this.amountScan) {
-        this.acceptedSucsess = true
-        historyRef.push({
-          date: this.dateHit,
-          nameEqm: this.nameEqmHit,
-          firstname: this.firstname,
-          lastname: this.lastname,
-          amount: this.amountScan,
-          category: this.categoryhit,
-          department: this.departmentHit,
-          HnNo: this.HnnoHit,
-          returnedEqm: 0,
-          returnedDate: ''
+      this.returnedScan = this.returnedScan + 1
+      if (this.returnedScan <= this.amountScan) {
+        historyRef.child(this.$route.params.id).update({
+          returnedEqm: this.returnedScan,
+          returnedDate: new Date().toLocaleString()
+        })
+        equipmentRef.child(this.keyEqm).update({
+          balanceEqm: this.balanceReturn,
+          borrowedEqm: this.borrowedReturn
         })
       }
-      if (this.acceptedScan <= this.amountScan) {
-        scanRef.child(this.$route.params.id).update({
-          balance: this.balanceScan,
-          accepted: this.acceptedScan
-        })
+      if (this.returnedScan === this.amountScan) {
+        this.returnedSucsess = true
       }
       this.okHidden = false
     },
@@ -206,10 +200,10 @@ export default {
       this.nameEqms = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameEqm
       this.statusEqm = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].status
 
-      this.nameLendScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).nameLend
+      this.nameLendScan = this.historys.find(history => history['.key'] === this.$route.params.id).nameEqm
       this.open = false
 
-      if (this.statusEqm === 'ถูกยืม') {
+      if (this.statusEqm === 'พร้อมใช้งาน') {
         this.msgStatus = true
       } else if (this.nameEqms === this.nameLendScan) {
         this.nameEqmTure = true
@@ -279,7 +273,6 @@ export default {
   color: #ffffff;
   border-radius: 100px
 }
-
 .card {
   width: 342px;
   margin: auto;

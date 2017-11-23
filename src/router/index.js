@@ -4,11 +4,23 @@ import Scanitem from '@/components/Scanitem'
 import Signin from '@/components/Signin'
 import Signup from '@/components/Signup'
 import Listeqm from '@/components/Listeqm'
+import AScanitem from '@/components/AScanitem'
+import AListeqm from '@/components/AListeqm'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/alisteqm',
+      name: 'alisteqm',
+      component: AListeqm
+    },
+    {
+      path: '/ascanitem/:id',
+      name: 'ascanitem',
+      component: AScanitem
+    },
     {
       path: '/listeqm',
       name: 'listeqm',

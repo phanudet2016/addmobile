@@ -53,7 +53,7 @@ export default {
       })
       var status = this.users.find(users => users.email === this.email.toLowerCase() && users.password === this.password).status
       if (status === 'admin') {
-        this.$router.push('/admin')
+        this.$router.push('/alisteqm')
       } else if (status === 'user') {
         this.$router.push('/listeqm')
       }

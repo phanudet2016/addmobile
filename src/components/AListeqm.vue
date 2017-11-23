@@ -7,17 +7,18 @@
       <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md" v-if="scans.firstname == firstnames && scans.accepted < scans.amountLend" v-for="scans of scan" style="padding-top:10px;">
+          <div class="col-md" v-for="history of historys" v-if="history.returnedEqm < history.amount" style="padding-top:10px;">
           <div class="card">
             <div class="card-block" style="padding-top:5px;"> 
-              <p style="text-align:left;margin-left:5px;">{{scans.nameLend}}</p>
+              <p style="text-align:left;margin-left:5px;">{{history.nameEqm}}</p>
               <p style="text-align:left;margin-left:5px;">
-              จำนวน: {{scans.amountLend}} <br>
-              รับแล้ว: {{scans.accepted}} 
-              <router-link :to="'/scanitem/' + scans['.key']">
-              <span style="color:#00b9e7;font-size:25px;float:right;margin-right:20px;" class="glyphicon glyphicon-qrcode"></span>
-              </router-link>
+                ผู้ยืม: {{history.firstname}} {{history.lastname}} <br>
+                จำนวน: {{history.amount}}
+                <router-link :to="'/ascanitem/' + history['.key']">
+                <span style="color:#00b9e7;font-size:25px;float:right;margin-right:20px;" class="glyphicon glyphicon-qrcode"></span>
+                </router-link>
               </p>
+              
             </div>
           </div>
           </div>
@@ -30,10 +31,10 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, userRef, scanRef, auth} from './firebase'
+import {equipmentRef, userRef, scanRef, auth, historyRef} from './firebase'
 
 export default {
-  name: 'hello',
+  name: 'alisteqm',
 
   data () {
     return {
@@ -45,7 +46,8 @@ export default {
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    scan: scanRef
+    scan: scanRef,
+    historys: historyRef
   },
   created () {
     this.user = auth.currentUser
@@ -72,7 +74,6 @@ export default {
 .card {
   width: 342px;
   margin: auto;
-  height: 90px;
   border-radius: 5px;
 }
 
