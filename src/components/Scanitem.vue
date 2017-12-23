@@ -1,14 +1,17 @@
 <template>
   <div>
-    <header style="background:#00b9e7;">
-      <span></span>
+    <header style="background:#4285f4;font-size:25px;">
+      <span>
+        <a style="margin-left:-152px;font-size:18px;color:#ffffff;" class="menuIcon"></a>
+        <a style="margin-left:16px;color:#ffffff;">สแกนรับอุปกรณ์</a>
+      </span>
     </header>
     <main>
       <div class="contenscan">
         <div class="qrcode-reader-demo container">
 
-          <div class="scan" >
-            <button @click="opencam">Scan</button>
+          <div class="scan" style="margin-top:200px;border-radius:4px;color:#000000;border:1px solid #073e8c;font-weight:bold;background-color: #ffffff;" v-if="open === ''">
+            <button @click="opencam">สแกนเพื่อรับอุปกรณ์</button>
           </div>
           <div v-if="open">
             <qrcode-reader :paused="paused" @decode="onDecode" @locate="onLocate" @init="onInit">
@@ -21,7 +24,7 @@
           </div>
           <div v-if="nameEqmTure && okHidden" class="scan">
             <div class="container-fluid">
-              <div class="row">
+              <div class="row" style="margin-top:-2px;">
                 <div class="col-md" style="padding-top:10px;">
                   <div class="card">
                     <div class="card-block" style="padding-top:5px;"> 
@@ -265,7 +268,7 @@ export default {
 <style>
 .scan button {
   height: 55px;
-  background-color: #00b9e7; /* Green */
+  background-color: #ffffff; /* Green */
   border: none;
   padding: 18px;
   width: 320px;
@@ -276,8 +279,7 @@ export default {
   margin: 4px 2px;
   cursor: pointer;
   opacity: 0.6;
-  color: #ffffff;
-  border-radius: 100px
+  color: #073e8c;
 }
 
 .card {
@@ -313,7 +315,11 @@ header {
   margin: 0;
   height: 56px;
   padding: 0 16px 0 24px;
-  color: #ffffff;
+  background:#ffffff;
+  color: #003a8c;
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 20px 0 rgba(0, 0, 0, 0.19); 
 }
 
 header span {
@@ -325,6 +331,17 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+}
+
+.menuIcon {
+    width: 150px;
+    font-size: 20px;
+    background-image: url('../assets/CCC.png');
+    background-size: 22px 17px;
+    background-position: 17px 17px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
 }
 
 </style>

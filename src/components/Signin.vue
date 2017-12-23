@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container-signin">
-      <img src="../assets/bbb.png" alt="Vue.js PWA" width="300px;">
+      <img src="../assets/b.png" alt="Vue.js PWA" width="200px;"><br><br>
         <form>
           <div class="group">
            <input type="text" required v-model="email">
@@ -145,7 +145,8 @@ header span {
   margin: 4px 2px;
   cursor: pointer;
   opacity: 0.6;
-  border-radius: 100px
+  border-radius: 100px;
+  font-family:Helvetica;
 }
 
 h2 		 {
@@ -162,6 +163,7 @@ h2 small {
 .group 			  {
   position:relative;
   margin-bottom:25px;
+  font-family:Helvetica;
 }
 input 				{
   margin: auto;

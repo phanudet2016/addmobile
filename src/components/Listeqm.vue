@@ -1,17 +1,20 @@
 <template>
   <div>
-    <header style="background:#00b9e7;">
-      <span @click="showList()">แสดงรายการ</span>
+    <header style="background:#4285f4;font-size:25px;">
+      <span>
+        <a style="margin-left:-180px;font-size:18px;color:#ffffff;" class="menuIcon"></a>
+        <a style="margin-left:16px;color:#ffffff;" @click="showList()">แสดงรายการ</a>
+      </span>
     </header>
-    <main><br>
+    <main><br><br><br>
       <div class="content">
       <div class="container-fluid">
-        <div class="row">
-          <div class="col-md" v-if="scans.firstname == firstnames && scans.accepted < scans.amountLend" v-for="scans of scan" style="padding-top:10px;">
-          <div class="card">
-            <div class="card-block" style="padding-top:5px;"> 
-              <p style="text-align:left;margin-left:5px;">{{scans.nameLend}}</p>
-              <p style="text-align:left;margin-left:5px;">
+        <div class="row" style="margin-top:-2px;">
+          <div class="col-md" v-if="scans.firstname == firstnames && scans.accepted < scans.amountLend" v-for="scans of scan" style="padding-top:8px;">
+          <div class="card" style="border-radius: 1px;">
+            <div class="card-block" style="padding-top:20px;padding-left:10px;"> 
+              <p style="text-align:left;margin-left:5px;font-size:15px;">{{scans.nameLend}}</p>
+              <p style="text-align:left;margin-left:5px;font-size:13px;color:#003a8c;">
               จำนวน: {{scans.amountLend}} <br>
               รับแล้ว: {{scans.accepted}} 
               <router-link :to="'/scanitem/' + scans['.key']">
@@ -70,10 +73,15 @@ export default {
 <style>
 
 .card {
-  width: 342px;
+  width: 347px;
   margin: auto;
-  height: 90px;
-  border-radius: 5px;
+  border-radius: 1px;
+  margin-left: -3px;
+}
+
+.content {
+  width: 366px;
+  margin: auto;
 }
 
 h1, h2 {
@@ -104,8 +112,11 @@ header {
   margin: 0;
   height: 56px;
   padding: 0 16px 0 24px;
-  background:#00b9e7;
-  color: #ffffff;
+  background:#ffffff;
+  color: #003a8c;
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 20px 0 rgba(0, 0, 0, 0.19); 
 }
 
 header span {
@@ -117,6 +128,17 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+  font-style: normal;
 }
 
+.menuIcon {
+    width: 150px;
+    font-size: 20px;
+    background-image: url('../assets/CCC.png');
+    background-size: 22px 17px;
+    background-position: 17px 17px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
+}
 </style>

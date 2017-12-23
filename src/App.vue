@@ -22,11 +22,11 @@ export default {
 <style>
 body {
   margin: 0;
-  background: #e9e9e9;
+  background: #f8f9fa;
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif; 
+  font-family: 'Prompt', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -41,8 +41,9 @@ header {
   margin: 0;
   height: 50px;
   padding: 0 16px 0 24px;
-  background:#00b9e7;
-  color: #ffffff;
+  background:#ffffff;
+  color: #003a8c;
+  width: 366px;
 }
 
 header span {
@@ -55,4 +56,5 @@ header span {
   box-sizing: border-box;
   padding-top: 16px;
 }
+@import url('https://fonts.googleapis.com/css?family=Prompt');
 </style>

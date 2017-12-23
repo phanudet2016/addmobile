@@ -7,7 +7,7 @@
       <div class="contenscan">
         <div class="qrcode-reader-demo container">
 
-          <div class="scan" >
+          <<div class="scan" style="margin-top:200px;border-radius:4px;color:#000000;border:1px solid #073e8c;font-weight:bold;background-color: #ffffff;" v-if="open === ''">
             <button @click="opencam">Scan</button>
           </div>
           <div v-if="open">
@@ -259,7 +259,7 @@ export default {
 <style>
 .scan button {
   height: 55px;
-  background-color: #00b9e7; /* Green */
+  background-color: #ffffff; /* Green */
   border: none;
   padding: 18px;
   width: 320px;
@@ -270,8 +270,7 @@ export default {
   margin: 4px 2px;
   cursor: pointer;
   opacity: 0.6;
-  color: #ffffff;
-  border-radius: 100px
+  color: #073e8c;
 }
 .card {
   width: 342px;
