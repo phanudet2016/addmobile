@@ -1,14 +1,17 @@
 <template>
   <div>
-    <header style="background:#00b9e7;">
-      <span></span>
+    <header style="background:#4285f4;font-size:25px;">
+      <span>
+        <a style="margin-left:-152px;font-size:18px;color:#ffffff;" class="menuIcon" @click="openNav()"></a>
+        <a style="margin-left:13px;color:#ffffff;">สแกนคืนอุปกรณ์</a>
+      </span>
     </header>
     <main>
       <div class="contenscan">
         <div class="qrcode-reader-demo container">
 
-          <<div class="scan" style="margin-top:200px;border-radius:4px;color:#000000;border:1px solid #073e8c;font-weight:bold;background-color: #ffffff;" v-if="open === ''">
-            <button @click="opencam">Scan</button>
+          <div class="scan" v-if="open === ''">
+            <button @click="opencam" style="margin-top:250px;border-radius:4px;color: #ffffff;background:#4285f4;">สแกนเพื่อรับอุปกรณ์คืน</button>
           </div>
           <div v-if="open">
             <qrcode-reader :paused="paused" @decode="onDecode" @locate="onLocate" @init="onInit">
@@ -20,29 +23,38 @@
             <br>         
           </div>
           <div v-if="nameEqmTure && okHidden" class="scan">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md" style="padding-top:10px;">
+            <div class="container-fluid" style="width:366px;margin-left: -2px;margin-top:80px;">
+              <div class="row" style="margin-top:-2px;">
+                <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
-                    <div class="card-block" style="padding-top:5px;"> 
-                      หมายเลขอุปกรณ์: {{eqmID}}
+                    <div class="card-block" style="padding-top:20px;font-size:20px;"> 
+                      <b>หมายเลขอุปกรณ์ </b> <br><br> <h4>{{eqmID}}</h4>
+                      <br>
+                      <b> ชื่ออุปกรณ์ </b> <br><br>
+                      <h4>{{nameEqms}}</h4>
                       <br><br>
-                      {{nameEqms}}
+                      <button @click="getEqm()" style="border-radius:4px;color: #ffffff;background:#4285f4;">ตกลง</button>
+                      <br><br>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <button @click="getEqm()">ตกลง</button>
+            <br>
+            
           </div>
 
           <div v-if="nameEqmTure === false || msgCheck === false">
-            <div class="container-fluid">
+            <div class="container-fluid" style="margin-left: -4px;margin-top:80px;">
               <div class="row">
-                <div class="col-md" style="padding-top:10px;">
+                <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
-                    <div class="card-block" style="padding-top:5px;"> 
+                    <div class="card-block" style="padding-top:20px;font-size:20px;">
+                      <br> 
                       อุปกรณ์ไม่อยู่ในรายการนี้
+                      <br><br><br><br>
+                      <button @click="OK()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
+                      <br><br>
                     </div>
                   </div>
                 </div>
@@ -50,13 +62,17 @@
             </div>
           </div>
 
-          <div v-if="msgStatus === true">
-            <div class="container-fluid">
+          <div v-if="msgStatus">
+            <div class="container-fluid" style="margin-left: -4px;margin-top:80px;">
               <div class="row">
-                <div class="col-md" style="padding-top:10px;">
+                <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
-                    <div class="card-block" style="padding-top:5px;"> 
-                      อุปกรณ์นี้คืนแแล้ว!!!
+                    <div class="card-block" style="padding-top:20px;font-size:20px;">
+                      <br> 
+                      อุปกรณ์นี้รับคืนแล้ว
+                      <br><br><br><br>
+                      <button @click="OK()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
+                      <br><br>
                     </div>
                   </div>
                 </div>
@@ -65,12 +81,16 @@
           </div>
 
           <div v-if="returnedSucsess">
-            <div class="container-fluid">
+            <div class="container-fluid" style="margin-left: -4px;margin-top:80px;">
               <div class="row">
-                <div class="col-md" style="padding-top:10px;">
+                <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
-                    <div class="card-block" style="padding-top:5px;"> 
-                      รับอุปกรณ์คืนครบแล้ว!!!
+                    <div class="card-block" style="padding-top:20px;font-size:20px;">
+                      <br> 
+                      รับอุปกรณ์ครบแล้ว
+                      <br><br><br><br>
+                      <button @click="okBackHome()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
+                      <br><br>
                     </div>
                   </div>
                 </div>
@@ -80,6 +100,21 @@
         </div>
         <button class="navbar-toggler"></button>
       </div>
+
+      <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" @click="closeNav()" style="color:#003a8c;">&times;</a>
+      <router-link to="/alisteqm">
+        <i class="glyphicon glyphicon-list-alt" style="color:#003a8c;font-size:70px;margin-top:120px;" @click="closeNav()"></i>
+        <a @click="closeNav()" href="#" style="color:#003a8c;margin-top:10px;">แสดงรายการ</a>
+      </router-link>
+      <div class="signOut">
+     <button @click="submitLogout()" style="margin-top:200px;border:1px solid #003a8c;background:#ffffff;border-radius:100px;font-size:16px;color:#003a8c;width:140px;height:50px;">
+          <i class="glyphicon glyphicon-off" style="color:#003a8c;font-size:16px;"></i>
+          ออกจากระบบ
+     </button>
+     </div>
+    </div>
+
     </main>
   </div>
 </template>
@@ -130,7 +165,14 @@ export default {
       msgCheck: '',
       balanceReturn: '',
       borrowedReturn: '',
-      returnedDate: ''
+      returnedDate: '',
+      firstnameHis: '',
+      lastnasmeHis: '',
+      returnNumber: '',
+      returned: '',
+      return: '',
+      aaaa: '',
+      indexNumber: ''
     }
   },
   firebase: {
@@ -161,31 +203,55 @@ export default {
       this.returnedScan = this.historys.find(history => history['.key'] === this.$route.params.id).returnedEqm
       this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
       this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).borrowedEqm
+
+      historyRef.child(this.$route.params.id + '/returnedDate/' + [this.indexNumber]).update({
+        number: this.eqmID,
+        date: new Date().toLocaleString(),
+        status: 'ส่งคืนแล้ว'
+      })
       this.borrowedReturn = this.borrowedReturn * 1 - 1
       this.balanceReturn = this.balanceReturn * 1 + 1
       this.amountScan = this.amountScan * 1
       this.returnedScan = this.returnedScan + 1
       if (this.returnedScan <= this.amountScan) {
         historyRef.child(this.$route.params.id).update({
-          returnedEqm: this.returnedScan,
-          returnedDate: new Date().toLocaleString()
+          returnedEqm: this.returnedScan
         })
         equipmentRef.child(this.keyEqm).update({
           balanceEqm: this.balanceReturn,
           borrowedEqm: this.borrowedReturn
         })
       }
-      if (this.returnedScan === this.amountScan) {
-        this.returnedSucsess = true
-      }
       this.okHidden = false
+      if (this.returnedScan === this.amountScan) {
+        this.open = false
+        this.returnedSucsess = true
+        console.log(this.returnedSucsess)
+      } else {
+        this.open = ''
+      }
     },
-    signout () {
+    OK () {
+      this.open = ''
+      this.nameEqmTure = ''
+      this.msgStatus = ''
+    },
+    okBackHome () {
+      this.$router.push('/alisteqm')
+    },
+    submitLogout () {
       auth.signOut()
       this.$router.push('/')
     },
     opencam () {
       this.open = true
+    },
+    openNav () {
+      document.getElementById('mySidenav').style.width = '101%'
+    },
+    closeNav () {
+      document.getElementById('mySidenav').style.width = '0'
+      document.getElementById('main').style.marginLeft = '0'
     },
     clcam () {
       this.open = ''
@@ -199,19 +265,32 @@ export default {
       this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].number
       this.nameEqms = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameEqm
       this.statusEqm = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].status
+      this.nameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+      this.lastnameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].lastnameLend
 
       this.nameLendScan = this.historys.find(history => history['.key'] === this.$route.params.id).nameEqm
-      this.open = false
-
-      if (this.statusEqm === 'พร้อมใช้งาน') {
-        this.msgStatus = true
-      } else if (this.nameEqms === this.nameLendScan) {
-        this.nameEqmTure = true
-        this.okHidden = true
-        this.msgStatus = false
+      this.firstnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).firstname
+      this.lastnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).lastname
+      this.returned = this.historys.find(history => history['.key'] === this.$route.params.id).returnedDate
+      this.indexNumber = this.returned.findIndex(returned => returned.number === this.eqmID)
+      console.log(this.indexNumber)
+      if (this.nameEqms === this.nameLendScan && this.returned.find(returned => returned.number === this.eqmID)) {
+        if (this.statusEqm === 'พร้อมใช้งาน') {
+          this.open = false
+          this.msgStatus = true
+        } else if (this.nameEqms === this.nameLendScan) {
+          this.nameEqmTure = true
+          this.okHidden = true
+          this.msgStatus = false
+          this.open = false
+        } else {
+          this.nameEqmTure = false
+        }
       } else {
         this.nameEqmTure = false
+        this.open = false
       }
+
       if (this.pauseOnCapture) {
         this.paused = true
       }
@@ -259,18 +338,15 @@ export default {
 <style>
 .scan button {
   height: 55px;
-  background-color: #ffffff; /* Green */
   border: none;
   padding: 18px;
-  width: 320px;
+  width: 200px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  opacity: 0.6;
-  color: #073e8c;
 }
 .card {
   width: 342px;
@@ -304,8 +380,13 @@ main {
 header {
   margin: 0;
   height: 56px;
+  width: 101%;
   padding: 0 16px 0 24px;
-  color: #ffffff;
+  background:#ffffff;
+  color: #003a8c;
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 20px 0 rgba(0, 0, 0, 0.19); 
 }
 
 header span {
@@ -318,5 +399,49 @@ header span {
   box-sizing: border-box;
   padding-top: 16px;
 }
+.menuIcon {
+    width: 150px;
+    font-size: 20px;
+    background-image: url('../assets/CCC.png');
+    background-size: 22px 17px;
+    background-position: 17px 17px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
+}
 
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1001;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
 </style>

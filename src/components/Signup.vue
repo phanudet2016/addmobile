@@ -45,7 +45,9 @@
             <label>Confirm Password</label>
           </div>
         </form>
-        <button @click="submitRegister()">REGISTER</button>
+        <div class="signup">
+        <button @click="submitRegister()" style="opacity: 0.6;background-color: #F6E3E3;">REGISTER</button>
+        </div>
     </div>
   </div>
 </template>
@@ -176,9 +178,8 @@ header span {
 
 /* basic stylings ------------------------------------------ */
 
-button {
+.signup button {
   height: 55px;
-  background-color: #F6E3E3; /* Green */
   border: none;
   padding: 18px;
   width: 320px;
@@ -188,7 +189,6 @@ button {
   font-size: 16px;
   margin: 2px 2px;
   cursor: pointer;
-  opacity: 0.6;
   border-radius: 100px
 }
 
