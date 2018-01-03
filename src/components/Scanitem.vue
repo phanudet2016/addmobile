@@ -201,7 +201,8 @@ export default {
       var insertNumber = {
         number: this.eqmID,
         date: '',
-        status: 'ยังไม่ส่งคืน'
+        status: 'ยังไม่ส่งคืน',
+        indexReturn: this.idexEqm
       }
       this.number.push(insertNumber)
 
@@ -220,7 +221,8 @@ export default {
           department: this.departmentHit,
           HnNo: this.HnnoHit,
           returnedEqm: 0,
-          returnedDate: this.number
+          returnedDate: this.number,
+          returnKey: this.keyEqm
         })
       }
       if (this.acceptedScan <= this.amountScan) {
