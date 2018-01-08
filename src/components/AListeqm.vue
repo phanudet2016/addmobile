@@ -15,6 +15,7 @@
             <div class="card-block" style="padding-top:20px;padding-left:10px;background:#ffffff;"> 
               <p style="text-align:left;margin-left:5px;font-size:15px;">{{history.nameEqm}}</p>
               <p style="text-align:left;margin-left:5px;font-size:13px;color:#003a8c;">
+                เลขที่การยืม: {{history.idLend}}<br>
                 ผู้ยืม: {{history.firstname}} {{history.lastname}} <br>
                 จำนวน: {{history.amount}} <br>
                 คืนแล้ว: {{history.returnedEqm}}

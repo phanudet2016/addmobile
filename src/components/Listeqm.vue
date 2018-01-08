@@ -15,6 +15,7 @@
             <div class="card-block" style="padding-top:20px;padding-left:10px;"> 
               <p style="text-align:left;margin-left:5px;font-size:15px;">{{scans.nameLend}}</p>
               <p style="text-align:left;margin-left:5px;font-size:13px;color:#003a8c;">
+              เลขที่การยืม: {{scans.idLend}}<br>
               จำนวน: {{scans.amountLend}} <br>
               รับแล้ว: {{scans.accepted}} 
               <router-link :to="'/scanitem/' + scans['.key']">
