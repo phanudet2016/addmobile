@@ -129,11 +129,11 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, auth, userRef, scanRef, historyRef, bookEqmRef} from './firebase'
+import {equipmentRef, auth, userRef, scanRef, historyRef} from './firebase'
 import moment from 'moment'
 
 export default {
-  name: 'ascanitem',
+  name: 'areturnrepair',
 
   data () {
     return {
@@ -182,18 +182,15 @@ export default {
       return: '',
       aaaa: '',
       indexNumber: '',
-      idLendHit: '',
-      keyUpdateforwardCound: '',
-      forwardCound: '',
-      keyRemoveBook: ''
+      numberEqm: '',
+      statuscheck: ''
     }
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
     scans: scanRef,
-    historys: historyRef,
-    bookEqm: bookEqmRef
+    historys: historyRef
   },
   created () {
   },
@@ -213,47 +210,32 @@ export default {
         nameLend: '',
         lastnameLend: ''
       })
-      this.amountScan = this.historys.find(history => history['.key'] === this.$route.params.id).amount
-      this.returnedScan = this.historys.find(history => history['.key'] === this.$route.params.id).returnedEqm
+      // this.amountScan = this.historys.find(history => history['.key'] === this.$route.params.id).amount
+      // this.returnedScan = this.historys.find(history => history['.key'] === this.$route.params.id).returnedEqm
       this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
-      this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).borrowedEqm
+      this.amountRepair = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).amountRepair
 
-      this.idLendRemoveBook = this.historys.find(history => history['.key'] === this.$route.params.id).idLend
-      this.keyRemoveBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLendRemoveBook)['.key']
-
-      this.idLendHit = this.historys.find(history => history['.key'] === this.$route.params.id).idLend
-      this.keyUpdateforwardCound = this.scans.find(scan => scan.idLend === this.idLendHit)['.key']
-      this.forwardCound = this.scans.find(scan => scan.idLend === this.idLendHit).forwardCound
-
-      this.forwardCound = this.forwardCound * 1 - 1
-      scanRef.child(this.keyUpdateforwardCound).update({
-        forwardCound: this.forwardCound
-      })
-
-      historyRef.child(this.$route.params.id + '/returnedDate/' + [this.indexNumber]).update({
-        number: this.eqmID,
-        date: moment().format('DD/MM/YYYY LTS'),
-        status: 'ส่งคืนแล้ว'
-      })
-      this.borrowedReturn = this.borrowedReturn * 1 - 1
+      // historyRef.child(this.$route.params.id + '/returnedDate/' + [this.indexNumber]).update({
+      //   number: this.eqmID,
+      //   date: new Date().toLocaleString(),
+      //   status: 'ส่งคืนแล้ว'
+      // })
+      this.amountRepair = this.amountRepair * 1 - 1
       this.balanceReturn = this.balanceReturn * 1 + 1
-      this.amountScan = this.amountScan * 1
-      this.returnedScan = this.returnedScan + 1
-      if (this.returnedScan <= this.amountScan) {
-        historyRef.child(this.$route.params.id).update({
-          returnedEqm: this.returnedScan
-        })
-        equipmentRef.child(this.keyEqm).update({
-          balanceEqm: this.balanceReturn,
-          borrowedEqm: this.borrowedReturn
-        })
-        bookEqmRef.child(this.keyRemoveBook).remove()
-      }
+      // this.amountScan = this.amountScan * 1
+      // this.returnedScan = this.returnedScan + 1
+      historyRef.child(this.$route.params.id).update({
+        statuscheck: 'พร้อมใช้งาน',
+        dateReturn: moment().format('DD/MM/YYYY LTS')
+      })
+      equipmentRef.child(this.keyEqm).update({
+        balanceEqm: this.balanceReturn,
+        amountRepair: this.amountRepair
+      })
+      this.returnedSucsess = true
       this.okHidden = false
-      if (this.returnedScan === this.amountScan) {
+      if (this.returnedSucsess === true) {
         this.open = false
-        this.returnedSucsess = true
-        console.log(this.returnedSucsess)
       } else {
         this.open = ''
       }
@@ -264,7 +246,8 @@ export default {
       this.msgStatus = ''
     },
     okBackHome () {
-      this.$router.push('/alisteqm')
+      this.$router.push('/alistrepair')
+      this.returnedSucsess = false
     },
     submitLogout () {
       auth.signOut()
@@ -292,26 +275,29 @@ export default {
       this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].number
       this.nameEqms = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameEqm
       this.statusEqm = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].status
-      this.nameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
-      this.lastnameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].lastnameLend
+      // this.nameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+      // this.lastnameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].lastnameLend
 
       this.nameLendScan = this.historys.find(history => history['.key'] === this.$route.params.id).nameEqm
       this.firstnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).firstname
       this.lastnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).lastname
-      this.returned = this.historys.find(history => history['.key'] === this.$route.params.id).returnedDate
-      this.indexNumber = this.returned.findIndex(returned => returned.number === this.eqmID)
-      console.log(this.indexNumber)
-      if (this.nameEqms === this.nameLendScan && this.returned.find(returned => returned.number === this.eqmID)) {
+      this.numberEqm = this.historys.find(history => history['.key'] === this.$route.params.id).numberEqm
+      this.statuscheck = this.historys.find(history => history['.key'] === this.$route.params.id).statuscheck
+      // this.indexNumber = this.returned.findIndex(returned => returned.number === this.eqmID)
+
+      if (this.nameEqms === this.nameLendScan) {
         if (this.statusEqm === 'พร้อมใช้งาน') {
           this.open = false
           this.msgStatus = true
-        } else if (this.nameEqms === this.nameLendScan) {
+          this.statusEqm = '555'
+        } else if (this.nameEqms === this.nameLendScan && this.eqmID === this.numberEqm) {
           this.nameEqmTure = true
           this.okHidden = true
           this.msgStatus = false
           this.open = false
         } else {
           this.nameEqmTure = false
+          this.open = false
         }
       } else {
         this.nameEqmTure = false

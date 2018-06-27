@@ -10,16 +10,16 @@
       <div class="content">
       <div class="container-fluid">
         <div class="row" style="margin-top:40px;">
-          <div class="col-md" v-for="history of historys" v-if="history.returnedEqm < history.amount && history.status === 'ถูกยืม' && history.borrowedTo !== history.amount && history.amount !== history.returnedEqm + history.borrowedTo" style="padding-top:8px;">
+          <div class="col-md" v-for="history of historys" v-if="history.returnedEqm < history.amount && history.status === 'ส่งซ่อม' && history.statuscheck === 'กำลังส่งซ่อม'" style="padding-top:8px;">
           <div class="card" style="border-radius: 1px;">
             <div class="card-block" style="padding-top:20px;padding-left:10px;background:#ffffff;"> 
               <p style="text-align:left;margin-left:5px;font-size:15px;">{{history.nameEqm}}</p>
               <p style="text-align:left;margin-left:5px;font-size:13px;color:#003a8c;">
-                เลขที่การยืม: {{history.idLend}}<br>
-                ผู้ยืม: {{history.firstname}} {{history.lastname}} <br>
-                หมายเลขเครื่อง: {{history.numberShow}}
-                <!-- คืนแล้ว: {{history.returnedEqm}} -->
-                <router-link :to="'/ascanitem/' + history['.key']">
+                เลขที่การทำรายการ: {{history.idLend}}<br>
+                ผู้ส่งซ่อม : {{history.firstname}} {{history.lastname}} <br>
+                เลขเครื่อง : {{history.numberEqm}} <br>
+                <!-- จำนวน: {{history.amount}} <br> -->
+                <router-link :to="'/areturnrepair/' + history['.key']">
                 <span style="color:#00b9e7;font-size:25px;float:right;margin-right:20px;" class="glyphicon glyphicon-qrcode"></span>
                 </router-link>
               </p>
@@ -58,7 +58,7 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, userRef, scanRef, auth, historyRef, bookEqmRef} from './firebase'
+import {equipmentRef, userRef, scanRef, auth, historyRef} from './firebase'
 
 export default {
   name: 'alisteqm',
@@ -74,8 +74,7 @@ export default {
     equipments: equipmentRef,
     users: userRef,
     scan: scanRef,
-    historys: historyRef,
-    bookEqm: bookEqmRef
+    historys: historyRef
   },
   created () {
     this.user = auth.currentUser

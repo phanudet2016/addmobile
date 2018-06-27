@@ -10,16 +10,16 @@
       <div class="content">
       <div class="container-fluid">
         <div class="row" style="margin-top:-2px;">
-          <div class="col-md" v-if="scans.firstname == firstnames && scans.accepted < scans.amountLend" v-for="scans of scan" style="padding-top:8px;">
+          <div class="col-md" v-if="scans.firstname == firstnames && scans.accepted < scans.amountLend  && todayCheckTs >= scans.dateLendTs && todayCheckTs < scans.timeLengthTs" v-for="scans of scan" style="padding-top:8px;">
           <div class="card" style="border-radius: 1px;">
             <div class="card-block" style="padding-top:20px;padding-left:10px;"> 
               <p style="text-align:left;margin-left:5px;font-size:15px;">{{scans.nameLend}}</p>
               <p style="text-align:left;margin-left:5px;font-size:13px;color:#003a8c;">
               เลขที่การยืม: {{scans.idLend}}<br>
-              จำนวน: {{scans.amountLend}} <br>
-              รับแล้ว: {{scans.accepted}} 
+              หมายเลขเครื่อง: {{scans.numberShow}}
+              <!-- รับแล้ว: {{scans.accepted}}  -->
               <router-link :to="'/scanitem/' + scans['.key']">
-              <span style="color:#00b9e7;font-size:25px;float:right;margin-right:20px;" class="glyphicon glyphicon-qrcode"></span>
+              <span style="color:#00b9e7;font-size:25px;float:right;margin-right:20px;" class="glyphicon glyphicon-qrcode"></span><br>
               </router-link>
               </p>
             </div>
@@ -49,7 +49,8 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, userRef, scanRef, auth} from './firebase'
+import {equipmentRef, userRef, scanRef, auth, bookEqmRef} from './firebase'
+import dateFormat from 'dateformat'
 
 export default {
   name: 'hello',
@@ -58,13 +59,16 @@ export default {
     return {
       firstnames: '',
       lastname: '',
-      department: ''
+      department: '',
+
+      todayCheckTs: ''
     }
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    scan: scanRef
+    scan: scanRef,
+    bookEqm: bookEqmRef
   },
   created () {
     this.user = auth.currentUser
@@ -72,6 +76,10 @@ export default {
       this.firstnames = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
     }
+
+    this.todayCheck = dateFormat(new Date(), 'yyyy-mm-dd')
+    this.todayCheckTs = new Date(this.todayCheck).getTime()
+    console.log(this.todayCheck, this.todayCheckTs)
   },
   methods: {
     showList () {

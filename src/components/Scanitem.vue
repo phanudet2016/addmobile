@@ -3,13 +3,12 @@
     <header style="background:#4285f4;font-size:25px;">
       <span>
         <a style="margin-left:-152px;font-size:18px;color:#ffffff;" class="menuIcon" @click="openNav()"></a>
-        <a style="margin-left:16px;color:#ffffff;">สแกนรับอุปกรณ์</a>
+        <a style="margin-left:16px;color:#ffffff;">สแกนรับอุปกรณ์{{test}}</a>
       </span>
     </header>
     <main>
       <div class="contenscan">
         <div class="qrcode-reader-demo container">
-
           <div class="scan" v-if="open === ''">
             <button @click="opencam" style="margin-top:250px;border-radius:4px;color: #ffffff;background:#4285f4;">สแกนเพื่อรับอุปกรณ์</button>
           </div>
@@ -51,7 +50,7 @@
                   <div class="card">
                     <div class="card-block" style="padding-top:20px;font-size:20px;">
                       <br> 
-                      อุปกรณ์ไม่อยู่ในรายการยืม
+                      รับอุปกรณ์ไม่ตรงตามหมายเลข
                       <br><br><br><br>
                       <button @click="OK()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
                       <br><br>
@@ -87,7 +86,7 @@
                   <div class="card">
                     <div class="card-block" style="padding-top:20px;font-size:20px;">
                       <br> 
-                      รับอุปกรณ์ครบแล้ว
+                      รับอุปกรณ์แล้ว
                       <br><br><br><br>
                       <button @click="okBackHome()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
                       <br><br>
@@ -121,7 +120,8 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, auth, userRef, scanRef, historyRef} from './firebase'
+import {equipmentRef, auth, userRef, scanRef, historyRef, bookEqmRef} from './firebase'
+import moment from 'moment'
 
 export default {
   name: 'hello',
@@ -158,16 +158,60 @@ export default {
       departmentHit: '',
       HnnoHit: '',
       dateHit: '',
-      number: []
+      number: [],
+      idLend: '',
+      formIdlend: '',
+      arrayEqm: [],
+      test: '',
+      forwardCoundScan: '',
+
+      keyFormIdlen: '',
+      borrowedTo: '',
+      arrayEqmHit: '',
+      indexForward: '',
+      keyUpdateScan: '',
+      arrayEqmScan: '',
+      indexUpdateScan: '',
+
+      dateCheckReturn: '',
+      dateCheckRepair: '',
+      email: '',
+      formFirstname: '',
+      formLastname: '',
+
+      month: '',
+      year: '',
+      amountDate: '',
+      dateCheckCalibrate: '',
+      numberShow: '',
+      recipient: '',
+      dateLendTs: '',
+      timeLengthTs: '',
+      balanceLend: '',
+      borrowedLend: '',
+      keyRemoveBook: ''
+
     }
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
     scans: scanRef,
-    historys: historyRef
+    historys: historyRef,
+    bookEqm: bookEqmRef
   },
   created () {
+    this.formIdlend = this.scans.find(scan => scan['.key'] === this.$route.params.id).formIdlend
+    console.log(this.formIdlend, 'gg')
+    if (this.formIdlend !== '') {
+      this.arrayEqm = this.scans.find(scans => scans.idLend === this.formIdlend).number
+      console.log(this.arrayEqm)
+    }
+    this.user = auth.currentUser
+    if (this.user) {
+      this.firstname = this.users.find(users => users.email === this.user.email).firstname
+      this.lastname = this.users.find(users => users.email === this.user.email).lastname
+    }
   },
   methods: {
     scanEqm () {
@@ -187,6 +231,7 @@ export default {
       })
       this.balanceScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).balance
       this.acceptedScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).accepted
+      this.forwardCoundScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).forwardCound
       // push history
       this.amountScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).amountLend
       this.categoryhit = this.scans.find(scan => scan['.key'] === this.$route.params.id).categoryLend
@@ -194,6 +239,40 @@ export default {
       this.departmentHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).departmentLend
       this.HnnoHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).HnNo
       this.dateHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateLend
+      this.idLend = this.scans.find(scan => scan['.key'] === this.$route.params.id).idLend
+      this.timeLengthHit = this.scans.find(scan => scan['.key'] === this.$route.params.id).timeLength
+      this.dateCheckReturn = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateCheckReturn
+      this.dateCheckRepair = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateCheckRepair
+      this.dateCheckCalibrate = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateCheckCalibrate
+      this.email = this.scans.find(scan => scan['.key'] === this.$route.params.id).email
+      this.month = this.scans.find(scan => scan['.key'] === this.$route.params.id).month
+      this.year = this.scans.find(scan => scan['.key'] === this.$route.params.id).year
+      this.amountDate = this.scans.find(scan => scan['.key'] === this.$route.params.id).amountDate
+
+      if (this.formIdlend !== '') {
+        this.keyFormIdlen = this.historys.find(historys => historys.idLend === this.formIdlend)['.key']
+        this.borrowedTo = this.historys.find(historys => historys.idLend === this.formIdlend).borrowedTo
+        this.arrayEqmHit = this.historys.find(historys => historys.idLend === this.formIdlend).returnedDate
+        this.indexForward = this.arrayEqmHit.findIndex(arrayEqmHit => arrayEqmHit.number === this.eqmID)
+
+        this.keyUpdateScan = this.scans.find(scans => scans.idLend === this.formIdlend)['.key']
+        this.arrayEqmScan = this.scans.find(scans => scans.idLend === this.formIdlend).number
+        this.indexUpdateScan = this.arrayEqmScan.findIndex(arrayEqmScan => arrayEqmScan.number === this.eqmID)
+
+        this.borrowedTo = this.borrowedTo + 1
+        console.log(this.borrowedTo)
+        historyRef.child(this.keyFormIdlen + '/returnedDate/' + [this.indexForward]).update({
+          date: moment().format('DD/MM/YYYY LTS'),
+          status: 'ถูกยืมต่อ'
+        })
+        scanRef.child(this.keyUpdateScan + '/number/' + [this.indexUpdateScan]).update({
+          date: moment().format('DD/MM/YYYY LTS'),
+          status: 'ถูกยืมต่อ'
+        })
+        historyRef.child(this.keyFormIdlen).update({
+          borrowedTo: this.borrowedTo
+        })
+      }
 
       this.number = this.scans.find(scan => scan['.key'] === this.$route.params.id).number
       // end history
@@ -202,16 +281,21 @@ export default {
         number: this.eqmID,
         date: '',
         status: 'ยังไม่ส่งคืน',
-        indexReturn: this.idexEqm
+        indexReturn: this.idexEqm,
+        dateCheckReturn: this.dateCheckReturn
       }
       this.number.push(insertNumber)
 
       this.amountScan = this.amountScan * 1
       this.acceptedScan = this.acceptedScan + 1
       this.balanceScan = this.balanceScan * 1 - 1
+      this.forwardCoundScan = this.forwardCoundScan * 1 + 1
       if (this.acceptedScan >= this.amountScan) {
         this.acceptedSucsess = true
         historyRef.push({
+          amountDate: this.amountDate,
+          month: this.month,
+          year: this.year,
           date: this.dateHit,
           nameEqm: this.nameEqmHit,
           firstname: this.firstname,
@@ -220,18 +304,45 @@ export default {
           category: this.categoryhit,
           department: this.departmentHit,
           HnNo: this.HnnoHit,
+          borrowedTo: 0,
           returnedEqm: 0,
           returnedDate: this.number,
-          returnKey: this.keyEqm
+          returnKey: this.keyEqm,
+          idLend: this.idLend,
+          timeLength: this.timeLengthHit,
+          dateCheckReturn: this.dateCheckReturn,
+          dateCheckRepair: this.dateCheckRepair,
+          dateCheckCalibrate: this.dateCheckCalibrate,
+          email: this.email,
+          status: 'ถูกยืม',
+          // ****************************
+          numberShow: this.numberShow,
+          recipient: this.firstname + ' ' + this.lastname,
+          dateLendTs: this.dateLendTs,
+          timeLengthTs: this.timeLengthTs
         })
       }
       if (this.acceptedScan <= this.amountScan) {
         scanRef.child(this.$route.params.id).update({
           balance: this.balanceScan,
           accepted: this.acceptedScan,
-          number: this.number
+          number: this.number,
+          forwardCound: this.forwardCoundScan
         })
       }
+
+      var keyUpdate = this.keyEqm
+      this.balanceLend = this.equipments.find(equipments => equipments['.key'] === keyUpdate).balanceEqm
+      this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === keyUpdate).borrowedEqm
+      this.keyRemoveBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLend)['.key']
+      if (this.formIdlend === '') {
+        this.balanceLend = this.balanceLend * 1 - 1
+        this.borrowedLend = this.borrowedLend * 1 + 1
+        equipmentRef.child(keyUpdate).update({borrowedEqm: this.borrowedLend})
+        equipmentRef.child(keyUpdate).update({balanceEqm: this.balanceLend})
+      }
+      bookEqmRef.child(this.keyRemoveBook).update({status: 'รับแล้ว'})
+
       this.okHidden = false
       if (this.acceptedSucsess === true) {
         this.open = false
@@ -271,27 +382,51 @@ export default {
       this.idexEqm = str.substring(0, n)
       this.keyEqm = str.substring(n + 1)
       console.log(this.idexEqm, this.keyEqm)
+
       this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].number
       this.nameEqms = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameEqm
       this.statusEqm = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].status
+      this.formIdlend = this.scans.find(scan => scan['.key'] === this.$route.params.id).formIdlend
 
-      this.nameLendScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).nameLend
-      console.log(this.number)
-      this.open = false
-      if (this.statusEqm === 'ถูกยืม') {
-        this.msgStatus = true
-      } else if (this.nameEqms === this.nameLendScan) {
-        this.nameEqmTure = true
-        this.okHidden = true
-        this.msgStatus = false
-        console.log('1')
-      } else {
-        this.nameEqmTure = false
+      this.numberShow = this.scans.find(scan => scan['.key'] === this.$route.params.id).numberShow
+      this.dateLendTs = this.scans.find(scan => scan['.key'] === this.$route.params.id).dateLendTs
+      this.timeLengthTs = this.scans.find(scan => scan['.key'] === this.$route.params.id).timeLengthTs
+
+      if (this.formIdlend !== '') {
         this.open = false
-        console.log('2')
-      }
-      if (this.pauseOnCapture) {
-        this.paused = true
+        this.formFirstname = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+        this.formLastname = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+        // this.nameEqms = this.arrayEqm.find(arrayEqm => arrayEqm.number === this.eqmID).number
+        console.log(this.formFirstname, this.formLastname, 'GG')
+        this.nameEqmformIdlend = this.scans.find(scan => scan.idLend === this.formIdlend).nameLend
+        for (var i = 0; i < this.arrayEqm.length; i++) {
+          if (this.arrayEqm[i].number === this.eqmID && this.nameEqmformIdlend === this.nameEqms && this.formFirstname !== this.firstname && this.formLastname !== this.Lastname) {
+            this.nameEqmTure = true
+            this.okHidden = true
+            break
+          } else {
+            this.nameEqmTure = false
+          }
+        }
+      } else if (this.formIdlend === '') {
+        console.log('555')
+        this.nameLendScan = this.scans.find(scan => scan['.key'] === this.$route.params.id).nameLend
+        this.open = false
+        if (this.statusEqm === 'ถูกยืม') {
+          this.msgStatus = true
+        } else if (this.nameEqms === this.nameLendScan && this.numberShow === this.eqmID) {
+          this.nameEqmTure = true
+          this.okHidden = true
+          this.msgStatus = false
+          console.log('1')
+        } else {
+          this.nameEqmTure = false
+          this.open = false
+          console.log('2')
+        }
+        if (this.pauseOnCapture) {
+          this.paused = true
+        }
       }
     },
 

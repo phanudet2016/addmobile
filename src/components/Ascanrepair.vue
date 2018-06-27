@@ -3,15 +3,14 @@
     <header style="background:#4285f4;font-size:25px;">
       <span>
         <a style="margin-left:-152px;font-size:18px;color:#ffffff;" class="menuIcon" @click="openNav()"></a>
-        <a style="margin-left:13px;color:#ffffff;">สแกนคืนอุปกรณ์</a>
+        <a style="margin-left:16px;color:#ffffff;">ส่งซ่อมอุปกรณ์</a>
       </span>
     </header>
     <main>
       <div class="contenscan">
         <div class="qrcode-reader-demo container">
-
           <div class="scan" v-if="open === ''">
-            <button @click="opencam" style="margin-top:250px;border-radius:4px;color: #ffffff;background:#4285f4;">สแกนเพื่อรับอุปกรณ์คืน</button>
+            <button @click="opencam" style="margin-top:250px;border-radius:4px;color: #ffffff;background:#4285f4;">สแกนส่งซ่อมอุปกรณ์</button>
           </div>
           <div v-if="open">
             <qrcode-reader :paused="paused" @decode="onDecode" @locate="onLocate" @init="onInit">
@@ -32,8 +31,9 @@
                       <br>
                       <b> ชื่ออุปกรณ์ </b> <br><br>
                       <h4>{{nameEqms}}</h4>
-                      <br><br>
-                      <button @click="getEqm()" style="border-radius:4px;color: #ffffff;background:#4285f4;">ตกลง</button>
+                      <br>
+                      <textarea style="border-radius:4px;border: 2px solid #ccc;" v-model="text"></textarea><br><br>
+                      <button @click="getEqm()" style="border-radius:4px;color: #ffffff;background:#4285f4;width:254px;">ตกลง</button>
                       <br><br>
                     </div>
                   </div>
@@ -43,15 +43,15 @@
             <br>
             
           </div>
-
-          <div v-if="nameEqmTure === false || msgCheck === false">
+          
+          <div v-if="nameEqmTure === false">
             <div class="container-fluid" style="margin-left: -4px;margin-top:80px;">
               <div class="row">
                 <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
                     <div class="card-block" style="padding-top:20px;font-size:20px;">
                       <br> 
-                      อุปกรณ์ไม่อยู่ในรายการนี้
+                      อุปกรณ์ไม่อยู่ในสถานะส่งซ่อมได้
                       <br><br><br><br>
                       <button @click="OK()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
                       <br><br>
@@ -69,7 +69,7 @@
                   <div class="card">
                     <div class="card-block" style="padding-top:20px;font-size:20px;">
                       <br> 
-                      อุปกรณ์นี้รับคืนแล้ว
+                      อุปกรณ์นี้ถูกส่งซ่อมแล้ว หรืออยู่ในสถานะถูกยืม
                       <br><br><br><br>
                       <button @click="OK()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
                       <br><br>
@@ -80,14 +80,14 @@
             </div>
           </div>
 
-          <div v-if="returnedSucsess">
+          <div v-if="acceptedSucsess">
             <div class="container-fluid" style="margin-left: -4px;margin-top:80px;">
               <div class="row">
                 <div class="col-md" style="padding-top:10px;background:fffffff;">
                   <div class="card">
                     <div class="card-block" style="padding-top:20px;font-size:20px;">
                       <br> 
-                      รับอุปกรณ์ครบแล้ว
+                      ส่งซ่อมอุปกรณ์แล้ว
                       <br><br><br><br>
                       <button @click="okBackHome()" style="border-radius:4px;color: #ffffff;background:#4285f4;height: 55px;width:200px;border:none;font-size18px;">ตกลง</button>
                       <br><br>
@@ -116,7 +116,7 @@
         <a @click="closeNav()" href="#" style="color:#003a8c;margin-top:10px;margin-left:-50px;">รับอุปกรณ์ที่ส่งซ่อมคืน</a>
       </router-link>
       <div class="signOut">
-     <button @click="submitLogout()" style="margin-top:200px;border:1px solid #003a8c;background:#ffffff;border-radius:100px;font-size:16px;color:#003a8c;width:140px;height:50px;">
+     <button @click="submitLogout()" style="margin-top:50px;border:1px solid #003a8c;background:#ffffff;border-radius:100px;font-size:16px;color:#003a8c;width:140px;height:50px;">
           <i class="glyphicon glyphicon-off" style="color:#003a8c;font-size:16px;"></i>
           ออกจากระบบ
      </button>
@@ -129,11 +129,11 @@
 
 <script>
 import 'webrtc-adapter'
-import {equipmentRef, auth, userRef, scanRef, historyRef, bookEqmRef} from './firebase'
+import {equipmentRef, auth, userRef, scanRef, historyRef} from './firebase'
 import moment from 'moment'
 
 export default {
-  name: 'ascanitem',
+  name: 'ascanrepair',
 
   data () {
     return {
@@ -156,46 +156,53 @@ export default {
       pauseOnCapture: true,
 
       balanceScan: '',
-      returnedScan: '',
+      acceptedScan: '',
       nameLendScan: '',
       nameEqmTure: '',
       amountScan: '',
-      returnedSucsess: '',
+      acceptedSucsess: '',
       okHidden: '',
       msgStatus: '',
       categoryhit: '',
       departmentHit: '',
       HnnoHit: '',
       dateHit: '',
-      checkName: '',
-      checkLast: '',
-      nameLendCheck: '',
-      lastnameLendCheck: '',
-      msgCheck: '',
-      balanceReturn: '',
-      borrowedReturn: '',
-      returnedDate: '',
-      firstnameHis: '',
-      lastnasmeHis: '',
-      returnNumber: '',
-      returned: '',
-      return: '',
-      aaaa: '',
-      indexNumber: '',
-      idLendHit: '',
-      keyUpdateforwardCound: '',
-      forwardCound: '',
-      keyRemoveBook: ''
+      number: [],
+      idLend: '',
+      formIdlend: '',
+      arrayEqm: [],
+      test: '',
+      forwardCoundScan: '',
+
+      keyFormIdlen: '',
+      borrowedTo: '',
+      arrayEqmHit: '',
+      indexForward: '',
+      keyUpdateScan: '',
+      arrayEqmScan: '',
+      indexUpdateScan: '',
+
+      dateCheckReturn: '',
+      dateCheckRepair: '',
+      email: '',
+      formFirstname: '',
+      formLastname: '',
+      balanceLend: '',
+      amountRepair: '',
+      text: ''
     }
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
     scans: scanRef,
-    historys: historyRef,
-    bookEqm: bookEqmRef
+    historys: historyRef
   },
   created () {
+    if (this.user) {
+      this.firstname = this.users.find(users => users.email === this.user.email).firstname
+      this.lastname = this.users.find(users => users.email === this.user.email).lastname
+    }
   },
   methods: {
     scanEqm () {
@@ -206,54 +213,105 @@ export default {
       if (this.user) {
         this.firstname = this.users.find(users => users.email === this.user.email).firstname
         this.lastname = this.users.find(users => users.email === this.user.email).lastname
+        this.departmentHit = this.users.find(users => users.email === this.user.email).department
+        this.email = this.users.find(users => users.email === this.user.email).email
       }
 
       equipmentRef.child(this.keyEqm + '/equipmentID/' + [this.idexEqm]).update({
-        status: 'พร้อมใช้งาน',
-        nameLend: '',
-        lastnameLend: ''
+        status: 'ส่งซ่อม'
       })
-      this.amountScan = this.historys.find(history => history['.key'] === this.$route.params.id).amount
-      this.returnedScan = this.historys.find(history => history['.key'] === this.$route.params.id).returnedEqm
-      this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
-      this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).borrowedEqm
+      // this.balanceScan = this.scans.find(scan => scan['.key'] === this.keyEqm).balance
+      // this.acceptedScan = this.scans.find(scan => scan['.key'] === this.keyEqm).accepted
+      // this.forwardCoundScan = this.scans.find(scan => scan['.key'] === this.keyEqm).forwardCound
+      // push history
+      // this.amountScan = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).amountLend
+      this.categoryhit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).categoryEqm
+      this.nameEqmHit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).nameEqm
+      // this.departmentHit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).departmentLend
+      // this.HnnoHit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).HnNo
+      // this.dateHit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).dateLend
+      // this.idLend = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).idLend
+      // this.timeLengthHit = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).timeLength
+      // this.dateCheckReturn = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).dateCheckReturn
+      // this.dateCheckRepair = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).dateCheckRepair
+      // this.email = this.equipments.find(equipment => equipment['.key'] === this.keyEqm).email
+      this.balanceLend = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
+      this.amountRepair = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).amountRepair
 
-      this.idLendRemoveBook = this.historys.find(history => history['.key'] === this.$route.params.id).idLend
-      this.keyRemoveBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLendRemoveBook)['.key']
+      // this.number = this.equipments.find(equipment => equipment['.key'] === this.$route.params.id).number
+      // end history
+      // var insertNumber = {
+      //   number: this.eqmID,
+      //   date: '',
+      //   status: 'ยังไม่ส่งคืน',
+      //   indexReturn: this.idexEqm
+      // }
+      // this.number.push(insertNumber)
+      this.balanceLend = this.balanceLend * 1 - 1
+      this.amountRepair = this.amountRepair * 1 + 1
+      equipmentRef.child(this.keyEqm).update({balanceEqm: this.balanceLend})
+      equipmentRef.child(this.keyEqm).update({amountRepair: this.amountRepair})
 
-      this.idLendHit = this.historys.find(history => history['.key'] === this.$route.params.id).idLend
-      this.keyUpdateforwardCound = this.scans.find(scan => scan.idLend === this.idLendHit)['.key']
-      this.forwardCound = this.scans.find(scan => scan.idLend === this.idLendHit).forwardCound
-
-      this.forwardCound = this.forwardCound * 1 - 1
-      scanRef.child(this.keyUpdateforwardCound).update({
-        forwardCound: this.forwardCound
-      })
-
-      historyRef.child(this.$route.params.id + '/returnedDate/' + [this.indexNumber]).update({
-        number: this.eqmID,
-        date: moment().format('DD/MM/YYYY LTS'),
-        status: 'ส่งคืนแล้ว'
-      })
-      this.borrowedReturn = this.borrowedReturn * 1 - 1
-      this.balanceReturn = this.balanceReturn * 1 + 1
-      this.amountScan = this.amountScan * 1
-      this.returnedScan = this.returnedScan + 1
-      if (this.returnedScan <= this.amountScan) {
-        historyRef.child(this.$route.params.id).update({
-          returnedEqm: this.returnedScan
-        })
-        equipmentRef.child(this.keyEqm).update({
-          balanceEqm: this.balanceReturn,
-          borrowedEqm: this.borrowedReturn
-        })
-        bookEqmRef.child(this.keyRemoveBook).remove()
+      var s = ''
+      if (this.categoryhit === 'สนับสนุน') {
+        s = 'SUP'
+      } else if (this.categoryhit === 'วินิจฉัยและรักษา') {
+        s = 'DXRX'
+      } else if (this.categoryhit === 'รักษา') {
+        s = 'RX'
+      } else if (this.categoryhit === 'วินิจฉัย') {
+        s = 'DX'
       }
+      var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
+      var timestamp = new Date().getUTCMilliseconds()
+      var id = getRandomInt + timestamp
+      var idLend = s + id
+      // this.amountScan = this.amountScan * 1
+      // this.acceptedScan = this.acceptedScan + 1
+      // this.balanceScan = this.balanceScan * 1 - 1
+      // this.forwardCoundScan = this.forwardCoundScan * 1 + 1
+      if (this.text === '') {
+        this.text = '-'
+      }
+      this.acceptedSucsess = true
+      historyRef.push({
+        amountDate: '',
+        date: moment().format('DD/MM/YYYY'),
+        nameEqm: this.nameEqmHit,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        amount: 1,
+        category: this.categoryhit,
+        department: this.departmentHit,
+        HnNo: '-',
+        borrowedTo: 0,
+        returnedEqm: 0,
+        returnedDate: this.number,
+        returnKey: this.keyEqm,
+        idLend: idLend,
+        timeLength: '-',
+        dateCheckReturn: '-',
+        dateCheckRepair: '-',
+        dateCheckCalibrate: '-',
+        email: this.email,
+        status: 'ส่งซ่อม',
+        numberEqm: this.eqmID,
+        statuscheck: 'กำลังส่งซ่อม',
+        year: moment().format('YYYY'),
+        month: moment().format('MM'),
+        note: this.text
+      })
+      // if (this.acceptedScan <= this.amountScan) {
+      //   scanRef.child(this.$route.params.id).update({
+      //     balance: this.balanceScan,
+      //     accepted: this.acceptedScan,
+      //     number: this.number,
+      //     forwardCound: this.forwardCoundScan
+      //   })
+      // }
       this.okHidden = false
-      if (this.returnedScan === this.amountScan) {
+      if (this.acceptedSucsess === true) {
         this.open = false
-        this.returnedSucsess = true
-        console.log(this.returnedSucsess)
       } else {
         this.open = ''
       }
@@ -264,7 +322,15 @@ export default {
       this.msgStatus = ''
     },
     okBackHome () {
-      this.$router.push('/alisteqm')
+      this.$router.push('/ascanrepair')
+      this.acceptedSucsess = false
+    },
+    openNav () {
+      document.getElementById('mySidenav').style.width = '101%'
+    },
+    closeNav () {
+      document.getElementById('mySidenav').style.width = '0px'
+      document.getElementById('main').style.marginLeft = '0'
     },
     submitLogout () {
       auth.signOut()
@@ -272,13 +338,6 @@ export default {
     },
     opencam () {
       this.open = true
-    },
-    openNav () {
-      document.getElementById('mySidenav').style.width = '101%'
-    },
-    closeNav () {
-      document.getElementById('mySidenav').style.width = '0'
-      document.getElementById('main').style.marginLeft = '0'
     },
     clcam () {
       this.open = ''
@@ -289,38 +348,50 @@ export default {
       var n = str.indexOf(' ')
       this.idexEqm = str.substring(0, n)
       this.keyEqm = str.substring(n + 1)
+      console.log(this.idexEqm, this.keyEqm)
+
       this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].number
       this.nameEqms = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameEqm
       this.statusEqm = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].status
-      this.nameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
-      this.lastnameLendCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].lastnameLend
+      this.amountRepairCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).amountRepair
+      this.balanceEqmCheck = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).balanceEqm
+      // this.formIdlend = this.scans.find(scan => scan['.key'] === this.$route.params.id).formIdlend
 
-      this.nameLendScan = this.historys.find(history => history['.key'] === this.$route.params.id).nameEqm
-      this.firstnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).firstname
-      this.lastnameHis = this.historys.find(history => history['.key'] === this.$route.params.id).lastname
-      this.returned = this.historys.find(history => history['.key'] === this.$route.params.id).returnedDate
-      this.indexNumber = this.returned.findIndex(returned => returned.number === this.eqmID)
-      console.log(this.indexNumber)
-      if (this.nameEqms === this.nameLendScan && this.returned.find(returned => returned.number === this.eqmID)) {
-        if (this.statusEqm === 'พร้อมใช้งาน') {
-          this.open = false
-          this.msgStatus = true
-        } else if (this.nameEqms === this.nameLendScan) {
-          this.nameEqmTure = true
-          this.okHidden = true
-          this.msgStatus = false
-          this.open = false
-        } else {
-          this.nameEqmTure = false
-        }
+      // if (this.formIdlend !== '') {
+      //   this.open = false
+      //   this.formFirstname = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+      //   this.formLastname = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).equipmentID[this.idexEqm].nameLend
+      //   // this.nameEqms = this.arrayEqm.find(arrayEqm => arrayEqm.number === this.eqmID).number
+      //   console.log(this.formFirstname, this.formLastname, 'GG')
+      //   this.nameEqmformIdlend = this.scans.find(scan => scan.idLend === this.formIdlend).nameLend
+      //   for (var i = 0; i < this.arrayEqm.length; i++) {
+      //     if (this.arrayEqm[i].number === this.eqmID && this.nameEqmformIdlend === this.nameEqms && this.formFirstname !== this.firstname && this.formLastname !== this.Lastname) {
+      //       this.nameEqmTure = true
+      //       this.okHidden = true
+      //       break
+      //     } else {
+      //       this.nameEqmTure = false
+      //     }
+      //   }
+      // } else if (this.formIdlend === '') {
+      // this.nameLendScan = this.equipments.find(equipments => equipments['.key'] === this.keyEqm).nameLend
+      this.open = false
+      if (this.statusEqm === 'ส่งซ่อม' || this.statusEqm === 'ถูกยืม') {
+        this.msgStatus = true
+      } else if (this.nameEqms !== '') {
+        this.nameEqmTure = true
+        this.okHidden = true
+        this.msgStatus = false
+        console.log('1')
       } else {
         this.nameEqmTure = false
         this.open = false
+        console.log('2')
       }
-
       if (this.pauseOnCapture) {
         this.paused = true
       }
+      // }
     },
 
     onLocate (points) {
@@ -365,16 +436,14 @@ export default {
 <style>
 .scan button {
   height: 55px;
+  background: #4285f4;
   border: none;
   padding: 18px;
   width: 200px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
+  color: #ffffff;
+  font-size: 18px;
 }
+
 .card {
   width: 342px;
   margin: auto;
@@ -407,7 +476,7 @@ main {
 header {
   margin: 0;
   height: 56px;
-  width: 101%;
+  width: 100%;
   padding: 0 16px 0 24px;
   background:#ffffff;
   color: #003a8c;
@@ -426,6 +495,7 @@ header span {
   box-sizing: border-box;
   padding-top: 16px;
 }
+
 .menuIcon {
     width: 150px;
     font-size: 20px;
@@ -471,4 +541,5 @@ header span {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
 </style>
